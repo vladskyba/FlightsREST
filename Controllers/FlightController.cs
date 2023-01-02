@@ -8,7 +8,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace FlightREST.Controllers
 {
@@ -66,7 +65,7 @@ namespace FlightREST.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerResponse(StatusCodes.Status201Created, Type = typeof(FlightReadTransfer))]
-        public async Task<IActionResult> SearchFlights(FlightSearchParameters search)
+        public async Task<IActionResult> SearchFlights([FromBody] FlightSearchParameters search)
         {
             var flights = await _flightRepository.GetAsync(q => q.IsActive && 
             (string.IsNullOrEmpty(search.Arrival) || q.Arrival.ToLower().Contains(search.Arrival.ToLower())) &&
