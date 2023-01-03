@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Xml.Serialization;
 
 namespace FlightREST
 {
@@ -21,7 +20,6 @@ namespace FlightREST
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -29,6 +27,13 @@ namespace FlightREST
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddCors(options => options.AddPolicy("CorsPolicy", build =>
+            {
+                build.WithOrigins("http://localhost:8080")
+                     .AllowAnyMethod()
+                     .AllowAnyHeader();
+            }));
 
             var server = Configuration["DB_SERVER"] ?? "localhost";
             var port = Configuration["DB_PORT"] ?? "1433";
@@ -64,6 +69,8 @@ namespace FlightREST
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 
